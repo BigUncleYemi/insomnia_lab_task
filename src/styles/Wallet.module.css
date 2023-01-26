@@ -1,0 +1,53 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  background-color: var(--wv-white);
+  padding: 3rem 2rem 2rem;
+}
+
+.header div {
+  display: flex;
+  flex-direction: row;
+  margin-top: 1.5rem;
+}
+
+.header p {
+  font-family: var(--font-mono);
+  margin-right: 1rem;
+  font-size: 1rem;
+}
+
+.block {
+  background-color: var(--wv-white);
+  padding: 2rem;
+  margin: 5rem 2rem 0rem;
+}
+
+.block div:first-child {
+  display: flex;
+  flex-direction: row;
+}
+
+
+.block div:first-child p {
+  font-family: var(--font-mono);
+  margin-right: 1rem;
+  font-size: 1rem;
+}
+
+
+.imagesRow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.imagesRow img {
+  margin-right: 2rem;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

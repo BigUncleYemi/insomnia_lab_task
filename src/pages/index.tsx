@@ -1,11 +1,66 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from '@/styles/Home.module.css'
+/* eslint-disable react/no-unescaped-entities */
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { ethers } from "ethers";
+import styles from "@/styles/Home.module.css";
+import { useEffect, Fragment, useState } from "react";
+import { Address, useWalletContext } from "@/context";
 
-const inter = Inter({ subsets: ['latin'] })
+declare global {
+  interface Window {
+    ethereum: any; //TODO: fix type
+  }
+}
+
+const parseAddress = (address: string) =>
+  `${address[0]}${address[1]}${address[2]}${address[3]}.....${address[38]}${address[39]}${address[40]}${address[41]}`;
 
 export default function Home() {
+  const {
+    balance,
+    handleBalance,
+    defaultAddress,
+    handleDefaultAddress,
+    handleAddresses,
+  } = useWalletContext();
+  const router = useRouter();
+  const [hasWallet, setHasWallet] = useState<boolean>(false);
+
+  const handleGoToWallet = () => {
+    router.push({
+      pathname: "/wallet",
+    });
+  };
+
+  useEffect(() => {
+    console.log(global?.window?.ethereum);
+    if (global?.window?.ethereum) {
+      return setHasWallet(true);
+    } else {
+      return setHasWallet(false);
+    }
+  }, []);
+  const handleConnectWallet = async () => {
+    const [account] = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const balance = await provider.getBalance(account);
+    const addresses = await global?.window?.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    const getAddressArray: Array<Address> = addresses?.map(
+      (address: string) => ({
+        parse: parseAddress(address),
+        full: address,
+      })
+    );
+    handleBalance(ethers.utils.formatEther(balance));
+    handleDefaultAddress(getAddressArray?.[0]);
+    handleAddresses(getAddressArray);
+    handleGoToWallet();
+  };
+  console.log(process.env)
   return (
     <>
       <Head>
@@ -15,109 +70,26 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>pages/index.tsx</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
-        </div>
-
         <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
-          <div className={styles.thirteen}>
-            <Image
-              src="/thirteen.svg"
-              alt="13"
-              width={40}
-              height={31}
-              priority
-            />
-          </div>
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
+          <h1>Welcome to WalletViewer</h1>
+          {hasWallet ? (
+            <button onClick={handleConnectWallet}>Connect Wallet</button>
+          ) : (
+            <Fragment>
+              <p className="code">
+                Seems you don't have a wallet installed on your browser
+              </p>
+              <a
+                href="https://metamask.io/download.html"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Click to install MetaMask
+              </a>
+            </Fragment>
+          )}
         </div>
       </main>
     </>
-  )
+  );
 }
