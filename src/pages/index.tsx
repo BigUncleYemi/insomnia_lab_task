@@ -33,7 +33,6 @@ export default function Home() {
   };
 
   useEffect(() => {
-    console.log(global?.window?.ethereum);
     if (global?.window?.ethereum) {
       return setHasWallet(true);
     } else {
@@ -60,7 +59,6 @@ export default function Home() {
     handleAddresses(getAddressArray);
     handleGoToWallet();
   };
-  console.log(process.env)
   return (
     <>
       <Head>
