@@ -24,7 +24,6 @@ export default function Home() {
     handleGetAddressNft();
     handleGetAddressToken();
   }, [defaultAddress]);
-  console.log(listOfNFt)
   return (
     <>
       <Head>

@@ -71,8 +71,7 @@ const WalletProviderWrapper = ({ children }: { children: JSX.Element }) => {
         );
         return setListOfNFt(res?.data);
       } catch (error) {
-        console.log(error?.response?.data);
-        alert(error?.response?.data);
+        console.log(error);
       }
     }
   };
@@ -97,11 +96,9 @@ const WalletProviderWrapper = ({ children }: { children: JSX.Element }) => {
             },
           }
         );
-        console.log(res);
         setListOfToken(res?.data);
       } catch (error) {
-        console.log(error?.response?.data);
-        alert(error?.response?.data);
+        console.log(error);
       }
     }
   };
